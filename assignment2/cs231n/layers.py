@@ -53,7 +53,7 @@ def affine_backward(dout, cache):
   #############################################################################
   # TODO: Implement the affine backward pass.                                 #
   #############################################################################
-  x_r = np.reshape(x, (np.size(x,0), -1)) #
+  x_r = np.reshape(x, (np.size(x,0), -1))
   dx = np.dot(dout, w.T)
   db = np.sum(dout, axis=0)
   dw = np.dot(x_r.T, dout)
