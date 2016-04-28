@@ -173,25 +173,26 @@ class FullyConnectedNet(object):
     # beta2, etc. Scale parameters should be initialized to one and shift      #
     # parameters should be initialized to zero.                                #
     ############################################################################
-    # First hidden layer
+
+    # Input layer
     self.params['W1'] = np.random.normal(0, weight_scale, (input_dim, hidden_dims[0]))
     self.params['b1'] = np.zeros(hidden_dims[0])
     # self.params['gamma1'] = 1
     # self.params['shift'] = 0
-    hidden_dims.pop(0)
 
-    # Mid hidden layers
-    for idx, sizes in enumerate(zip(hidden_dims, hidden_dims[1:]), start=2):
-        self.params['W%s' % idx] = np.random.normal(0, weight_scale, (sizes[0], sizes[1]))
-        self.params['b%s' % idx] = np.zeros(sizes[1])
+    # Hidden layers
+    for i in range(self.num_layers - 2):
+        idx, size, size_next = i+2, hidden_dims[i], hidden_dims[i+1]
+        self.params['W%s' % idx] = np.random.normal(0, weight_scale, (size, size_next))
+        self.params['b%s' % idx] = np.zeros(size_next)
         # self.params['gamma%s' % idx] = 1
         # self.params['shift' % idx] = 0
 
-    # Last hidden layer
-    last_idx = self.num_layers - 1
-    self.params['W%s' % last_idx] = np.random.normal(0, weight_scale,
-                                                     (hidden_dims[-1], num_classes))
-    self.params['b%s' % last_idx] = np.zeros(num_classes)
+    # Output layer
+    self.params['W%s' % self.num_layers] = np.random.normal(0, weight_scale,
+                                                            (hidden_dims[-1], num_classes)
+                                                           )
+    self.params['b%s' % self.num_layers] = np.zeros(num_classes)
     # self.params['gamma%s' % last_idx] = 1
     # self.params['shift%s' % last_idx] = 0
     ############################################################################
@@ -253,15 +254,16 @@ class FullyConnectedNet(object):
     ############################################################################
 
     # {affine - [batch norm] - relu - [dropout]} x (L - 1) - affine - softmax
-    idx_last = self.num_layers - 1
-    score = X
-    cache = [None] * self.num_layers
-    for i in range(1, idx_last):
-        score, cache[i] = affine_relu_forward(X, self.params['W%s' % i], self.params['b%s' % i])
+    scores = X
+    cache = [None] * (self.num_layers)
+    for i in range(1, self.num_layers):
+        scores, cache[i-1] = affine_relu_forward(scores,
+                                                self.params['W%s' % i], self.params['b%s' % i]
+                                                )
 
     # Output layer
-    i = idx_last
-    score, cache[i] = affine_forward(X, self.params['W%s' % i], self.params['b%s' % i])
+    i = self.num_layers 
+    scores, cache[i-1] = affine_forward(scores, self.params['W%s' % i], self.params['b%s' % i])
 
     ############################################################################
     #                             END OF YOUR CODE                             #
@@ -286,13 +288,23 @@ class FullyConnectedNet(object):
     # of 0.5 to simplify the expression for the gradient.                      #
     ############################################################################
     loss, dx_soft = softmax_loss(scores, y)
-    loss += 0.5 * self.reg * np.sum([np.sum(self.params['W%s' % i]**2) for i in self.num_layers])
+    loss += 0.5 * self.reg * np.sum([np.sum(self.params['W%s' % i]**2) for i in
+                                    range(1, self.num_layers + 1)])
 
-    dx_last, grads['W%s'%idx_last], grads['W%s'%idx_last] =affine_backward(dx_soft, cache[idx_last])
-
+    # Output layer
+    idx_last = self.num_layers
+    dx_last, grads['W%s'%idx_last], grads['b%s'%idx_last] =(
+                                                    affine_backward(dx_soft, cache[idx_last-1])
+                                                    )
+    # Hidden layers
     dx_prev = dx_last
-    for i in range(1, idx_last, -1):
-        dx_prev, grads['W%s'%i], grads['W%s'%i] = affine_relu_backward(dx_prev, cache[i])
+    for i in reversed(range(1, idx_last)):
+        dx_prev, grads['W%s'%i], grads['b%s'%i] = affine_relu_backward(dx_prev, cache[i-1])
+
+    # Regularization
+    for i in range(1, self.num_layers + 1):
+        grads['W%s'%i] += self.reg * self.params['W%s'%i]
+
 
     ############################################################################
     #                             END OF YOUR CODE                             #
