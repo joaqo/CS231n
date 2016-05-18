@@ -56,9 +56,6 @@ class ThreeLayerConvNet(object):
     self.params['b1'] = np.zeros(num_filters)
     self.params['b2'] = np.zeros(hidden_dim)
     self.params['b3'] = np.zeros(num_classes)
-    ############################################################################
-    #                             END OF YOUR CODE                             #
-    ############################################################################
 
     for k, v in self.params.iteritems():
       self.params[k] = v.astype(dtype)
@@ -93,9 +90,6 @@ class ThreeLayerConvNet(object):
     H2, cache_2 = affine_relu_forward(H1, W2, b2)
     scores, cache_out = affine_forward(H2, W3, b3)
     
-    ############################################################################
-    #                             END OF YOUR CODE                             #
-    ############################################################################
     
     if y is None:
       return scores
@@ -117,9 +111,6 @@ class ThreeLayerConvNet(object):
     grads['W1'] += self.reg * self.params['W1']
     grads['W2'] += self.reg * self.params['W2']
     grads['W3'] += self.reg * self.params['W3']
-    ############################################################################
-    #                             END OF YOUR CODE                             #
-    ############################################################################
     
     return loss, grads
   

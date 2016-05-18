@@ -49,9 +49,6 @@ class TwoLayerNet(object):
     self.params['b1'] = np.zeros(hidden_dim)
     self.params['W2'] = np.random.normal(0, weight_scale, (hidden_dim, num_classes))
     self.params['b2'] = np.zeros(num_classes)
-    ############################################################################
-    #                             END OF YOUR CODE                             #
-    ############################################################################
 
 
   def loss(self, X, y=None):
@@ -80,9 +77,6 @@ class TwoLayerNet(object):
     ############################################################################
     h1, cache_1 = affine_relu_forward(X, self.params['W1'], self.params['b1'])
     scores, cache_2 = affine_forward(h1, self.params['W2'], self.params['b2'])
-    ############################################################################
-    #                             END OF YOUR CODE                             #
-    ############################################################################
 
     # If y is None then we are in test mode so just return scores
     if y is None:
@@ -108,9 +102,6 @@ class TwoLayerNet(object):
     grads['b1'] = db_1
     grads['W2'] = dw_2 + self.reg * self.params['W2']
     grads['b2'] = db_2
-    ############################################################################
-    #                             END OF YOUR CODE                             #
-    ############################################################################
 
     return loss, grads
 
@@ -195,9 +186,6 @@ class FullyConnectedNet(object):
                                                             (hidden_dims[-1], num_classes)
                                                            )
     self.params['b%s' % self.num_layers] = np.zeros(num_classes)
-    ############################################################################
-    #                             END OF YOUR CODE                             #
-    ############################################################################
 
     # When using dropout we need to pass a dropout_param dictionary to each
     # dropout layer so that the layer knows the dropout probability and the mode
@@ -283,9 +271,6 @@ class FullyConnectedNet(object):
     			       		     self.params['b%s'%i],
 					    )
 
-    ############################################################################
-    #                             END OF YOUR CODE                             #
-    ############################################################################
 
     # If test mode return early
     if mode == 'test':
@@ -335,9 +320,6 @@ class FullyConnectedNet(object):
         grads['W%s'%i] += self.reg * self.params['W%s'%i]
 
 
-    ############################################################################
-    #                             END OF YOUR CODE                             #
-    ############################################################################
 
     return loss, grads
 

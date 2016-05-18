@@ -50,9 +50,6 @@ class LinearClassifier(object):
       idx = np.random.choice(num_train, batch_size, replace=True)
       X_batch = X[idx,:]
       y_batch = y[idx]
-      ########################################################################
-      #                       END OF YOUR CODE                                #
-      #########################################################################
 
       # evaluate loss and gradient
       loss, grad = self.loss(X_batch, y_batch, reg)
@@ -65,9 +62,6 @@ class LinearClassifier(object):
       # Update the weights using the gradient and the learning rate.          #
       #########################################################################
       self.W -= learning_rate * grad
-      #########################################################################
-      #                       END OF YOUR CODE                                #
-      #########################################################################
 
       if verbose and it % 100 == 0:
         print 'iteration %d / %d: loss %f' % (it, num_iters, loss)
@@ -93,9 +87,6 @@ class LinearClassifier(object):
     # Implement this method. Store the predicted labels in y_pred.            #
     ###########################################################################
     y_pred = np.argmax(np.dot(X,self.W), axis=1)
-    ###########################################################################
-    #                           END OF YOUR CODE                              #
-    ###########################################################################
     return y_pred
   
   def loss(self, X_batch, y_batch, reg):
